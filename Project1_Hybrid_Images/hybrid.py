@@ -148,7 +148,10 @@ def high_pass(img, sigma, size):
         height and the number of color channels)
     '''
     # TODO-BLOCK-BEGIN
-    raise Exception("TODO in hybrid.py not implemented")
+    #-------------------------------wrong -------------------------------
+    res = img - low_pass(img, sigma, size)
+    return res
+
     # TODO-BLOCK-END
 
 def create_hybrid_image(img1, img2, sigma1, size1, high_low1, sigma2, size2,
