@@ -46,7 +46,7 @@ class TestCrossCorrelation2D(unittest.TestCase):
 	mean = np.ones((3,3))
 	student = hybrid.cross_correlation_2d(self.small_img_grey, mean)
 	solution = cv2.filter2D(self.small_img_grey, -1, mean, borderType=cv2.BORDER_CONSTANT)
-
+	
 	self.assertTrue(np.allclose(student, solution, atol=1e-08), \
 		msg="Incorrect cross-correlation of greyscale image using mean filter")
 
@@ -183,6 +183,8 @@ class TestGaussianKernel2D(unittest.TestCase):
 	    [ 0.03995536,  0.04242606,  0.04328312,  0.04242606,  0.03995536],
 	    [ 0.03916419,  0.04158597,  0.04242606,  0.04158597,  0.03916419],
 	    [ 0.03688345,  0.03916419,  0.03995536,  0.03916419,  0.03688345]])
+	temp = hybrid.gaussian_blur_kernel_2d(5, 5, 5)
+	print (temp)
 	self.assertTrue(np.allclose(hybrid.gaussian_blur_kernel_2d(5, 5, 5), a,
 	    atol=1e-08))
 

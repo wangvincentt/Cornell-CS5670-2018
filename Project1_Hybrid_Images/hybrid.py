@@ -3,6 +3,42 @@ sys.path.append('/Users/kb/bin/opencv-3.1.0/build/lib/')
 
 import cv2
 import numpy as np
+import math 
+
+def singleImage_helper(img, kernel, is_convolution):
+    (row, col) = img.shape
+    (k, l) = kernel.shape
+    k_center = (int)(k / 2)
+    l_center = (int)(l / 2)
+    res = np.zeros((row,col))
+    for i in range (row):
+        for j in range (col):
+            for m in range (k):
+                for n in range (l):
+                    if is_convolution:
+                        m1 = i - (m - k_center)
+                        n1 = j - (n - l_center)
+                    else:
+                        m1 = i + (m - k_center)
+                        n1 = j + (n - l_center)
+                    if (m1 < row and m1 >= 0)  and (n1 < col and n1 >= 0):
+                        img_f = img[m1][n1] 
+                        res[i][j] += kernel[m][n] * img_f
+
+    return res
+
+
+def rgb_helper(img, kernel, is_convolution):
+    (row, col, v ) = img.shape
+    res = np.zeros((row,col,v))
+    for i in range (v):
+        res[:, :, i] = singleImage_helper(img[:, :, i], kernel, is_convolution)
+    return res
+
+
+# res = np.random.rand(30,20,3)
+# temp = res[:,:,1]
+# print (temp.shape)
 
 def cross_correlation_2d(img, kernel):
     '''Given a kernel of arbitrary m x n dimensions, with both m and n being
@@ -23,7 +59,11 @@ def cross_correlation_2d(img, kernel):
         height and the number of color channels)
     '''
     # TODO-BLOCK-BEGIN
-    raise Exception("TODO in hybrid.py not implemented")
+    dimension = len(img.shape)
+    if dimension == 2:
+        return singleImage_helper(img, kernel, False)
+    else:
+        return rgb_helper(img, kernel, False)
     # TODO-BLOCK-END
 
 def convolve_2d(img, kernel):
@@ -40,8 +80,13 @@ def convolve_2d(img, kernel):
         height and the number of color channels)
     '''
     # TODO-BLOCK-BEGIN
-    raise Exception("TODO in hybrid.py not implemented")
+    dimension = len(img.shape)
+    if dimension == 2:
+        return singleImage_helper(img, kernel, True)
+    else:
+        return  rgb_helper(img, kernel, True)
     # TODO-BLOCK-END
+
 
 def gaussian_blur_kernel_2d(sigma, width, height):
     '''Return a Gaussian blur kernel of the given dimensions and with the given
@@ -59,7 +104,24 @@ def gaussian_blur_kernel_2d(sigma, width, height):
         with an image results in a Gaussian-blurred image.
     '''
     # TODO-BLOCK-BEGIN
-    raise Exception("TODO in hybrid.py not implemented")
+    res = np.zeros((width, height))
+    w_center = int(width / 2)
+    h_center = int(height / 2)
+    sigma_square = sigma ** 2
+
+    matrix_sum = 0.0
+
+    for i in range (width):
+        for j in range (height):
+            dist_square = ((i - w_center) ** 2) + ((j - h_center) ** 2)
+            res[i][j] = (1.0 / (2.0 * math.pi * sigma_square)) * (math.e ** (-dist_square / (2.0 * sigma_square))) 
+            matrix_sum += res[i][j]
+    
+    for i in range (width):
+        for j in range (height):
+            res[i][j] = res[i][j] / matrix_sum
+    return res
+    
     # TODO-BLOCK-END
 
 def low_pass(img, sigma, size):
