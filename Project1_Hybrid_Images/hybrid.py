@@ -134,7 +134,8 @@ def low_pass(img, sigma, size):
         height and the number of color channels)
     '''
     # TODO-BLOCK-BEGIN
-    raise Exception("TODO in hybrid.py not implemented")
+    gaussian_kernel = gaussian_blur_kernel_2d(sigma, size, size)
+    return convolve_2d(img, gaussian_kernel)
     # TODO-BLOCK-END
 
 def high_pass(img, sigma, size):
