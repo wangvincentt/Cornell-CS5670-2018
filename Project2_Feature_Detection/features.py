@@ -98,6 +98,10 @@ class HarrisKeypointDetector(KeypointDetector):
         outImage[:, :, 2] += harrisImage * (4 * 255 / (np.max(harrisImage)) + 1e-50)
         cv2.imwrite("harris.png", outImage)
 
+    def harris_guass(self):
+        sx = 0.125 * [[-1, 0, 1],[-2, 0, 2],[-1, 0, 1]]
+        sx = np.array(sx)
+
     # Compute harris values of an image.
     def computeHarrisValues(self, srcImage):
         '''
@@ -119,8 +123,10 @@ class HarrisKeypointDetector(KeypointDetector):
         # each pixel and store in 'harrisImage'.  See the project page
         # for direction on how to do this. Also compute an orientation
         # for each pixel and store it in 'orientationImage.'
+
         # TODO-BLOCK-BEGIN
-        raise Exception("TODO in features.py not implemented")
+        harris_guass()
+
         # TODO-BLOCK-END
 
         # Save the harris image as harris.png for the website assignment
