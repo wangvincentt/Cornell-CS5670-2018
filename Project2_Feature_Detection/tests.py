@@ -4,6 +4,8 @@ import cv2
 import transformations
 import features
 import traceback
+import pandas as pd 
+
 
 from PIL import Image
 
@@ -46,6 +48,7 @@ def try_this(todo, run, truth, compare, *args, **kargs):
 
     @return (int): The amount of things that failed
     '''
+
     print 'Starting test for TODO {}'.format(todo)
     failed = 0
     try:
@@ -54,6 +57,13 @@ def try_this(todo, run, truth, compare, *args, **kargs):
         traceback.print_exc()
         print("TODO {} threw an exception, see exception above".format(todo))
         return
+
+    # if todo == '5 and/or 6':
+
+    #     output.tofile('foo.csv',sep=',',format='%10.6f')
+    #     truth.tofile('foo_t.csv',sep=',',format='%10.6f')
+
+
     if type(output) is list or type(output) is tuple:
         for i in range(len(output)):
             if not compare(output[i], truth[i], **kargs):
