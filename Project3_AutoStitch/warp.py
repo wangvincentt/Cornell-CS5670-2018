@@ -71,8 +71,6 @@ def computeSphericalWarpMappings(dstShape, f, k1, k2):
     # as output for your code. They should all have the shape
     # (img_height, img_width)
     # TODO-BLOCK-BEGIN
-    raise Exception("TODO in warp.py not implemented")
-
     a = np.sin(xf) * np.cos(yf)
     b = np.sin(yf)
     c = np.cos(xf) * np.cos(yf)
