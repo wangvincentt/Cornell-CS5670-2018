@@ -32,23 +32,28 @@ def compute_photometric_stereo_impl(lights, images):
         normals -- float32 height x width x 3 image with dimensions matching
                    the input images.
     """
-    N, H, W = len(images), len(images[0]), len(images[0][0])
+    N = len(images)
+    (H, W, channel) = images[0].shape
+    albedo = np.zeros((H, W, channel), dtype = np.float32)
+    normals = np.zeros((H, W, 3), dtype = np.float32)
     lights = lights.T
+
     for i in range (H):
         for j in range (W):
-            for k in range (3):
-                I = np.array([images[m][i][j][k] for m in range (N)])
-                L = inv(np.dot(lights.T, lights))
-                #L = np.dot(lights.T, lights)
-                print L.shape 
-                break
+            for k in range (channel):
+                I = np.array([image[i, j, k] for image in images])
+                I.reshape((N, 1))
+                L = np.linalg.inv(np.dot(lights.T, lights))
                 R = np.dot(lights.T,I)
                 G = np.dot(L, R)
-                K = LA.norm(G)
-                norm = G / K
-
-
-
+                kd = np.linalg.norm(G)
+                if kd < 1e-7:
+                    kd, norm = 0, np.zeros((3,1))
+                else:
+                    norm = G / kd
+                albedo[i, j, k] = kd 
+                normals[i, j] = norm.reshape((3, ))
+    return albedo, normals
 
 def project_impl(K, Rt, points):
     """
@@ -60,7 +65,10 @@ def project_impl(K, Rt, points):
     Output:
         projections -- height x width x 2 array of 2D projections
     """
-    raise NotImplementedError()
+    (H, W) = points.shape
+    projections = np.zeros((H, W, 2))
+
+    
 
 
 
