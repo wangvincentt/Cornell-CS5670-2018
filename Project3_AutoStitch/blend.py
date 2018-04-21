@@ -69,24 +69,25 @@ def accumulateBlend(img, acc, M, blendWidth):
 
     for i in range (min_x, max_x):
         for j in range(min_y, max_y): 
-            p = np.array([i, j, 1]).T
-            p = np.dot(inv(M), p)
+            p = np.array([[i, j, 1]]).T
+            p = np.dot(np.linalg.inv(M), p)
             _x = int(p[0][0] / p[2][0])
-            _y = int(p[0][1] / p[2][0])
+            _y = int(p[1][0] / p[2][0])
+            c = np.inf
             if _x >= 0 and _x < width - 1 and _y >= 0 and _y < height - 1:
                 weight = 1.0 
                 if i>= min_x and i < min_x + blendWidth:
                     c = float(i - min_x) / blendWidth
                     weight = min(weight, c)
-                if i <= max_x and i > max - blendWidth:
+                if i <= max_x and i > (max_x- blendWidth):
                     c = float(max_x - i) / blendWidth
                     weight = min(weight, c)
-                if img[_x, _y, 0] == 0 and img[_x, _y, 1] == 0 and img[_x, _y, 2] == 0:
+                if img[_y, _x, 0] == 0 and img[_y, _x, 1] == 0 and img[_y, _x, 2] == 0:
                     weight = 0.0
-                RGB = [img[_x, _y, i] for i in range (3)]
-                for k in range (3):
-                    acc[j, i, k] += RGB[k] * weight
-                acc[j, i, 3] += weight
+                # RGB = [img[_y, _x, i] for i in range (3)]
+                # for k in range (3):
+                acc[j, i, :-1] += img[_y,_x,:] * weight
+                acc[j, i, -1] += weight
     #TODO-BLOCK-END
     # END TODO
 
