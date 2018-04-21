@@ -34,8 +34,8 @@ def compute_photometric_stereo_impl(lights, images):
     """
     N = len(images)
     (H, W, channel) = images[0].shape
-    albedo = np.zeros((H, W, channel), dtype = np.float32)
-    normals = np.zeros((H, W, 3), dtype = np.float32)
+    albedo = np.zeros((H, W, channel))
+    normals = np.zeros((H, W, 3))
     lights = lights.T
 
     for i in range (H):
@@ -65,12 +65,23 @@ def project_impl(K, Rt, points):
     Output:
         projections -- height x width x 2 array of 2D projections
     """
-    (H, W) = points.shape
+
+    # formulas:
+    # http://www.cs.cornell.edu/courses/cs5670/2018sp/lectures/lec12_singleview.pdf
+    # https://en.wikipedia.org/wiki/Camera_resectioning  
+
+    (H, W, _) = points.shape
     projections = np.zeros((H, W, 2))
+    krt = np.dot(K, Rt)
 
-    
-
-
+    for i in range (H):
+        for j in range (W):
+            point = np.append(points[i][j], 1)
+            _point = np.dot(krt, point)
+            (x, y) = (_point[0], _point[1]) / _point[2]
+            projections[i,j,0] = x 
+            projections[i,j,1] = y
+    return projections
 
 def preprocess_ncc_impl(image, ncc_size):
     """
