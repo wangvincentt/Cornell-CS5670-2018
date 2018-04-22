@@ -172,7 +172,12 @@ def compute_ncc_impl(image1, image2):
         ncc -- height x width normalized cross correlation between image1 and
                image2.
     """
-    raise NotImplementedError()
+    H, W, _ = image1.shape
+    ncc = np.zeros((H, W))
+    for i in range (H):
+        for j in range (W):
+            ncc[i, j] = np.correlate(image1[i, j], image2[i, j])[0]
+    return ncc
 
 
 def form_poisson_equation_impl(height, width, alpha, normals, depth_weight, depth):
