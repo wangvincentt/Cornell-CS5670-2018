@@ -52,7 +52,8 @@ def compute_photometric_stereo_impl(lights, images):
                 else:
                     norm = G / kd
                 albedo[i, j, k] = kd 
-                normals[i, j] = norm.reshape((3, ))
+                if k == 0:
+                    normals[i, j] = norm.reshape((3, ))
     return albedo, normals
 
 def project_impl(K, Rt, points):
@@ -132,8 +133,32 @@ def preprocess_ncc_impl(image, ncc_size):
     Output:
         normalized -- heigth x width x (channels * ncc_size**2) array
     """
-    raise NotImplementedError()
+    H, W, channel = image.shape
+    radium= ncc_size / 2
+    normalized = np.zeros((H, W, channel * ncc_size * ncc_size), dtype = np.float32)
 
+    for i in range(H):
+        for j in range(W):
+            left = j - radium
+            right = j + radium
+            up = i - radium
+            down = i + radium
+
+            if up >= 0 and down < H and left >= 0 and right < W:
+                patches = list()
+                for k in range(channel):
+                    patch = image[up : down + 1, left : right + 1, k]
+                    patch_mean = np.mean(patch)
+                    patch = (patch - patch_mean).flatten()
+                    patches.extend(patch)
+                _patches = np.array(patches)
+                norm = np.linalg.norm(_patches)
+                if norm < 1e-6:
+                    _patches.fill(0)
+                else:
+                    _patches = _patches / norm
+                normalized[i,j] = _patches
+    return normalized
 
 def compute_ncc_impl(image1, image2):
     """
