@@ -70,7 +70,6 @@ def project_impl(K, Rt, points):
     # formulas:
     # http://www.cs.cornell.edu/courses/cs5670/2018sp/lectures/lec12_singleview.pdf
     # https://en.wikipedia.org/wiki/Camera_resectioning  
-
     (H, W, _) = points.shape
     projections = np.zeros((H, W, 2))
     krt = np.dot(K, Rt)
@@ -281,14 +280,23 @@ def form_poisson_equation_impl(height, width, alpha, normals, depth_weight, dept
     '''
     #TODO Block Begin
     #fill row_ind,col_ind,data_arr,b
-    raise NotImplementedError()
+    for i in range (height):
+        for j in range(width):
+            if alpha[i, j] == 0:
+                b.append(0)
+                continue
+            row_ind.append(len(b))
+            col_ind.append(len(b))
+            data_arr.append(depth_weight)
+            b.append(depth_weight * depth[i,j])
+
     #TODO Block end
     # Convert all the lists to numpy array
     row_ind = np.array(row_ind, dtype=np.int32)
     col_ind = np.array(col_ind, dtype=np.int32)
     data_arr = np.array(data_arr, dtype=np.float32)
     b = np.array(b, dtype=np.float32)
-
+    row = len(data_arr)
     # Create a compressed sparse matrix from indices and values
     A = csr_matrix((data_arr, (row_ind, col_ind)), shape=(row, width * height))
 
