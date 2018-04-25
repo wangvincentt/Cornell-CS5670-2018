@@ -280,15 +280,64 @@ def form_poisson_equation_impl(height, width, alpha, normals, depth_weight, dept
     '''
     #TODO Block Begin
     #fill row_ind,col_ind,data_arr,b
-    for i in range (height):
-        for j in range(width):
-            if alpha[i, j] == 0:
-                b.append(0)
-                continue
-            row_ind.append(len(b))
-            col_ind.append(len(b))
-            data_arr.append(depth_weight)
-            b.append(depth_weight * depth[i,j])
+
+    # For depth mode 
+    if normals == None:    
+        for i in range (height):
+            for j in range(width):
+                if alpha[i, j] == 0:
+                    #b.append(0)
+                    continue
+                row_ind.append(len(b))
+                col_ind.append(len(b))
+                data_arr.append(depth_weight)
+                b.append(depth_weight * depth[i,j])
+    # For normal mode
+    elif depth_weight < 0.1:
+        for i in range (height):
+            for j in range (width - 1):
+                if (alpha[i, j] == 0 ) or ( alpha[i, j + 1] == 0 ):
+                    continue
+                row_ind.append(len(b))
+                col_ind.append(len(b))
+                data_arr.append(-normals[i, j , 2])
+                b.append(normals[i, j, 0])
+        for i in range (height - 1):
+            for j in range (width):
+                if (alpha[i, j] == 0 ) or ( alpha[i+1, j] == 0 ):
+                    continue
+                row_ind.append(len(b))
+                col_ind.append(len(b))
+                data_arr.append(-normals[i, j , 2])
+                b.append(-normals[i, j, 3])
+    else:
+        for i in range (height):
+            for j in range(width):
+                if alpha[i, j] == 0:
+                    #b.append(0)
+                    continue
+                row_ind.append(len(b))
+                col_ind.append(len(b))
+                data_arr.append(depth_weight)
+                b.append(depth_weight * depth[i,j])
+        for i in range (height):
+            for j in range (width - 1):
+                if (alpha[i, j] == 0 ) or ( alpha[i, j + 1] == 0 ):
+                    continue
+                row_ind.append(len(b))
+                col_ind.append(len(b))
+                data_arr.append(-normals[i, j , 2])
+                b.append(normals[i, j, 0])
+        for i in range (height - 1):
+            for j in range (width):
+                if (alpha[i, j] == 0 ) or ( alpha[i+1, j] == 0 ):
+                    continue
+                row_ind.append(len(b))
+                col_ind.append(len(b))
+                data_arr.append(-normals[i, j , 2])
+                b.append(-normals[i, j, 3])
+
+
 
     #TODO Block end
     # Convert all the lists to numpy array
